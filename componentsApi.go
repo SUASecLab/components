@@ -12,11 +12,11 @@ import (
 )
 
 func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
-	password := r.URL.Query().Get("password")
+	queryPassword := r.URL.Query().Get("password")
 	nr := r.URL.Query().Get("nr")
 	components := r.URL.Query().Get("components")
 
-	if password != editPassword {
+	if queryPassword != editPassword {
 		fmt.Fprintf(w, "Invalid password")
 		return
 	}
@@ -32,11 +32,13 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Println("Could not open DB connection:", err)
+		return
 	}
 
 	err = db.Ping()
 	if err != nil {
 		log.Println("Could not ping DB:", err)
+		return
 	}
 
 	var count int
@@ -46,6 +48,7 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintf(w, "Can not prepare insertion/update of data")
 		log.Println("Can not query number of rows", err)
+		return
 	}
 
 	if count == 0 {

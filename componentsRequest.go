@@ -29,11 +29,13 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Println("Could not open DB connection:", err)
+		return
 	}
 
 	err = db.Ping()
 	if err != nil {
 		log.Println("Could not ping DB:", err)
+		return
 	}
 
 	var components string
@@ -43,6 +45,7 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Println("Could not query DB", err)
+		return
 	}
 
 	fmt.Fprintf(w, components)
