@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 
+	"github.com/SUASecLab/workadventure_admin_extensions/extensions"
 	_ "github.com/go-sql-driver/mysql"
 
 	"fmt"
@@ -15,8 +16,22 @@ import (
 
 func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	// Get workplace number
 	variables := mux.Vars(r)
 	nr := variables["nr"]
+
+	// Get user ID
+	uuid := r.URL.Query().Get("uuid")
+
+	// Validate uuid
+	exists, errorMsg := extensions.UserExists(adminExtensions, uuid)
+	if !exists {
+		w.WriteHeader(403)
+		log.Println(errorMsg)
+		fmt.Fprintf(w, errorMsg)
+		return
+	}
 
 	nrVal, err := strconv.Atoi(nr)
 	if err != nil {

@@ -17,7 +17,7 @@ var (
 	hostname string
 	dbname   string
 
-	editPassword string
+	adminExtensions string
 )
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 	password = os.Getenv("MYSQL_PASSWORD")
 	hostname = os.Getenv("DB_HOSTNAME")
 	dbname = os.Getenv("MYSQL_DATABASE")
-	editPassword = os.Getenv("COMPONENTS_EDIT_PASSWORD")
+	adminExtensions = os.Getenv("ADMIN_EXTENSIONS")
 
 	r = mux.NewRouter()
 	r.HandleFunc("/api/", handleAPIRequest)

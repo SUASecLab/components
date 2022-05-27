@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 
+	"github.com/SUASecLab/workadventure_admin_extensions/extensions"
 	_ "github.com/go-sql-driver/mysql"
 
 	"fmt"
@@ -12,12 +13,14 @@ import (
 )
 
 func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
-	queryPassword := r.URL.Query().Get("password")
+	uuid := r.URL.Query().Get("uuid")
 	nr := r.URL.Query().Get("nr")
 	components := r.URL.Query().Get("components")
 
-	if queryPassword != editPassword {
-		fmt.Fprintf(w, "Invalid password")
+	// find out whether user is admin
+	isAdmin, errorMsg := extensions.UserIsAdmin(adminExtensions, uuid)
+	if !isAdmin || len(errorMsg) != 0 {
+		fmt.Fprintf(w, "You are not an administrator")
 		return
 	}
 

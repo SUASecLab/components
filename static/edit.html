@@ -10,10 +10,16 @@
             <input type="number" name="nr">
             <p>Components:</p>
             <textarea name="components"></textarea>
-            <p>Password:</p>
-            <input type="password" name="password">
+            <input type="hidden" name="uuid" id="uuidInput">
             <p>Save changes:</p>
             <button type="submit">Insert/Update components</button>
         </form>
+        <script>
+            let params = new URLSearchParams(window.location.search)
+            if (params.has('uuid')) {
+                uuid = params.get('uuid');
+                document.getElementById("uuidInput").value = uuid;
+            }
+        </script>
     </body>
 </html>
