@@ -22,12 +22,12 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 	nr := variables["nr"]
 
 	// Get user ID
-	uuid := r.URL.Query().Get("uuid")
+	userToken := r.URL.Query().Get("token")
 
 	// Validate uuid
-	exists, errorMsg := extensions.UserExists(adminExtensions, uuid)
+	exists, errorMsg := extensions.UserExists(adminExtensionsURL, userToken)
 	if !exists {
-		w.WriteHeader(403)
+		w.WriteHeader(http.StatusForbidden)
 		log.Println(errorMsg)
 		fmt.Fprintf(w, errorMsg)
 		return
@@ -35,7 +35,8 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 
 	nrVal, err := strconv.Atoi(nr)
 	if err != nil {
-		fmt.Fprintf(w, "Invalid number")
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Invalid workplace number")
 		return
 	}
 
@@ -43,13 +44,19 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	if err != nil {
-		log.Println("Could not open DB connection:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := "Could not open DB connection"
+		fmt.Fprintf(w, msg)
+		log.Println(msg, err)
 		return
 	}
 
 	err = db.Ping()
 	if err != nil {
-		log.Println("Could not ping DB:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := "Connection to database was lost"
+		fmt.Fprintf(w, msg)
+		log.Println(msg, err)
 		return
 	}
 
@@ -59,7 +66,10 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 	err = db.QueryRow(query, nrVal).Scan(&components)
 
 	if err != nil {
-		log.Println("Could not query DB", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := "Could not query database"
+		fmt.Fprintf(w, msg)
+		log.Println(msg, err)
 		return
 	}
 

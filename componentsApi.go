@@ -13,19 +13,24 @@ import (
 )
 
 func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
-	uuid := r.URL.Query().Get("uuid")
+	userToken := r.URL.Query().Get("token")
 	nr := r.URL.Query().Get("nr")
 	components := r.URL.Query().Get("components")
 
 	// find out whether user is admin
-	isAdmin, errorMsg := extensions.UserIsAdmin(adminExtensions, uuid)
+	isAdmin, errorMsg := extensions.UserIsAdmin(adminExtensionsURL, userToken)
 	if !isAdmin || len(errorMsg) != 0 {
+		w.WriteHeader(http.StatusForbidden)
 		fmt.Fprintf(w, "You are not an administrator")
+		if len(errorMsg) > 0 {
+			log.Println("Error while checking if user is admin:", errorMsg)
+		}
 		return
 	}
 
 	nrVal, err := strconv.Atoi(nr)
 	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "Invalid workplace number")
 		return
 	}
@@ -34,13 +39,19 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	if err != nil {
-		log.Println("Could not open DB connection:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := "Could not open DB connection"
+		fmt.Fprintf(w, msg)
+		log.Println(msg, err)
 		return
 	}
 
 	err = db.Ping()
 	if err != nil {
-		log.Println("Could not ping DB:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := "Connection to database was lost"
+		fmt.Fprintf(w, msg)
+		log.Println(msg, err)
 		return
 	}
 
@@ -49,8 +60,10 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 
 	err = db.QueryRow(query, nrVal).Scan(&count)
 	if err != nil {
-		fmt.Fprintf(w, "Can not prepare insertion/update of data")
-		log.Println("Can not query number of rows", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := "Can not prepare insertion/update of data"
+		fmt.Fprintf(w, msg)
+		log.Println(msg, err)
 		return
 	}
 
@@ -60,8 +73,10 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 		_, err := db.Exec(query, nrVal, components)
 
 		if err != nil {
-			fmt.Fprintf(w, "Could not insert components")
-			log.Println("Could not insert components", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			msg := "Could not insert components"
+			fmt.Fprintf(w, msg)
+			log.Println(msg, err)
 		} else {
 			fmt.Fprintf(w, "Inserted components")
 		}
@@ -72,8 +87,10 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 	_, err = db.Exec(query, components, nrVal)
 
 	if err != nil {
-		fmt.Fprintf(w, "Could not update components")
-		log.Println("Could not update components:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := "Could not update components"
+		fmt.Fprintf(w, msg)
+		log.Println(msg, err)
 	} else {
 		fmt.Fprintf(w, "Updated components")
 	}

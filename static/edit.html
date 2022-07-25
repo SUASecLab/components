@@ -10,15 +10,15 @@
             <input type="number" name="nr">
             <p>Components:</p>
             <textarea name="components"></textarea>
-            <input type="hidden" name="uuid" id="uuidInput">
+            <input type="hidden" name="token" id="tokenInput">
             <p>Save changes:</p>
             <button type="submit">Insert/Update components</button>
         </form>
         <script>
             let params = new URLSearchParams(window.location.search)
-            if (params.has('uuid')) {
-                uuid = params.get('uuid');
-                document.getElementById("uuidInput").value = uuid;
+            if (params.has('token')) {
+                token = params.get('token');
+                document.getElementById("tokenInput").value = token;
             }
         </script>
     </body>

@@ -1,7 +1,13 @@
 github.com/SUASecLab/workadventure_admin_extensions v0.0.0-20220529193754-b4ce4b8d9616 h1:ArXVNJoU0x84MUnNIwxpfqhAua5t1AVZ20J6/4YXyqI=
 github.com/SUASecLab/workadventure_admin_extensions v0.0.0-20220529193754-b4ce4b8d9616/go.mod h1:OyvJ8OqPG7gGjIYUPzM+3gspviFH+1sB3GAyeEXzAzk=
+github.com/SUASecLab/workadventure_admin_extensions v0.0.2-0.20220725101604-6789c89e2f88 h1:rmKtc4AC/R6RSOAHJ9BZrP1Z00NZLsUr0NAzVvuXYrM=
+github.com/SUASecLab/workadventure_admin_extensions v0.0.2-0.20220725101604-6789c89e2f88/go.mod h1:QaQvddxtTdq9n+pJfcAfUEbfvkyE/ew46NU+ub4WQNs=
+github.com/SUASecLab/workadventure_admin_extensions v0.0.2-0.20220725113120-410e27e89320 h1:T+CsbZ8oO4mxkml5R9Cpf7+9H6m10LQOhrE8mpqatkE=
+github.com/SUASecLab/workadventure_admin_extensions v0.0.2-0.20220725113120-410e27e89320/go.mod h1:QaQvddxtTdq9n+pJfcAfUEbfvkyE/ew46NU+ub4WQNs=
 github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfCHuOE=
 github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
+github.com/golang-jwt/jwt/v4 v4.4.2 h1:rcc4lwaZgFMCZ5jxF9ABolDcIHdBytAFgqFPbSJQAYs=
+github.com/golang-jwt/jwt/v4 v4.4.2/go.mod h1:m21LjoU+eqJr34lmDMbreY2eSTRJ1cv77w39/MY0Ch0=
 github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
 github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=

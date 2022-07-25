@@ -17,17 +17,28 @@ var (
 	hostname string
 	dbname   string
 
-	adminExtensions string
+	adminExtensionsURL string
+	externalToken      string
 )
 
 func main() {
 	log.SetFlags(0)
+	var exists bool
 
 	username = os.Getenv("MYSQL_USER")
 	password = os.Getenv("MYSQL_PASSWORD")
 	hostname = os.Getenv("DB_HOSTNAME")
 	dbname = os.Getenv("MYSQL_DATABASE")
-	adminExtensions = os.Getenv("ADMIN_EXTENSIONS")
+
+	adminExtensionsURL, exists = os.LookupEnv("ADMIN_EXTENSIONS")
+	if !exists {
+		log.Fatalln("No admin extensions URL set")
+	}
+
+	externalToken, exists = os.LookupEnv("EXTERNAL_TOKEN")
+	if !exists {
+		log.Fatalln("No external token set")
+	}
 
 	r = mux.NewRouter()
 	r.HandleFunc("/api/", handleAPIRequest)
@@ -38,7 +49,10 @@ func main() {
 		content, err := os.ReadFile("static/edit.html")
 
 		if err != nil {
-			fmt.Fprintf(w, "Can not serve file")
+			w.WriteHeader(http.StatusInternalServerError)
+			msg := "Can not serve file"
+			fmt.Fprintf(w, msg)
+			log.Println(msg, err)
 			return
 		}
 		fmt.Fprintf(w, string(content))
