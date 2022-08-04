@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
@@ -21,14 +25,29 @@ var (
 	externalToken      string
 )
 
+func connectToCollection(w http.ResponseWriter) (context.Context, context.CancelFunc, *mongo.Client, *mongo.Collection, bool) {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+username+":"+
+		password+"@"+hostname+":27017/"+dbname))
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Could not connect to database")
+		return ctx, cancel, client, nil, false
+	}
+
+	return ctx, cancel, client, client.Database(dbname).Collection("components"), true
+}
+
 func main() {
 	log.SetFlags(0)
 	var exists bool
 
-	username = os.Getenv("MYSQL_USER")
-	password = os.Getenv("MYSQL_PASSWORD")
-	hostname = os.Getenv("DB_HOSTNAME")
-	dbname = os.Getenv("MYSQL_DATABASE")
+	username = os.Getenv("DB_USER")
+	password = os.Getenv("DB_PASSWORD")
+	hostname = os.Getenv("DB_HOST")
+	dbname = os.Getenv("DB_NAME")
 
 	adminExtensionsURL, exists = os.LookupEnv("ADMIN_EXTENSIONS")
 	if !exists {

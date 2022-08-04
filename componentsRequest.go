@@ -1,10 +1,9 @@
 package main
 
 import (
-	"database/sql"
-
 	"github.com/SUASecLab/workadventure_admin_extensions/extensions"
-	_ "github.com/go-sql-driver/mysql"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"fmt"
 	"log"
@@ -15,7 +14,9 @@ import (
 )
 
 func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
+	// CORS and MIME type
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "text/plain")
 
 	// Get workplace number
 	variables := mux.Vars(r)
@@ -33,6 +34,7 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get workplace description
 	nrVal, err := strconv.Atoi(nr)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -40,38 +42,26 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, err := sql.Open("mysql", username+":"+password+"@("+hostname+":3306)/"+dbname+"?parseTime=true")
-	defer db.Close()
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		msg := "Could not open DB connection"
-		fmt.Fprintf(w, msg)
-		log.Println(msg, err)
+	ctx, cancel, client, collection, success := connectToCollection(w)
+	defer cancel()
+	defer client.Disconnect(ctx)
+	if !success {
 		return
 	}
 
-	err = db.Ping()
+	var result bson.M
+
+	err = collection.FindOne(ctx, bson.D{{Key: "nr", Value: nrVal}}).Decode(&result)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		msg := "Connection to database was lost"
-		fmt.Fprintf(w, msg)
-		log.Println(msg, err)
-		return
+		if err == mongo.ErrNoDocuments {
+			fmt.Fprintln(w, "No information stored")
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Println("Could not fetch document:", err)
+			fmt.Fprintf(w, "An error occured while fetching the document")
+		}
+	} else {
+		// We found the document
+		fmt.Fprintf(w, "%v", result["components"])
 	}
-
-	var components string
-
-	query := `SELECT components FROM components WHERE nr = ?`
-	err = db.QueryRow(query, nrVal).Scan(&components)
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		msg := "Could not query database"
-		fmt.Fprintf(w, msg)
-		log.Println(msg, err)
-		return
-	}
-
-	fmt.Fprintf(w, components)
 }

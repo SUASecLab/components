@@ -1,10 +1,9 @@
 package main
 
 import (
-	"database/sql"
-
 	"github.com/SUASecLab/workadventure_admin_extensions/extensions"
-	_ "github.com/go-sql-driver/mysql"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"fmt"
 	"log"
@@ -35,63 +34,28 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, err := sql.Open("mysql", username+":"+password+"@("+hostname+":3306)/"+dbname+"?parseTime=true")
-	defer db.Close()
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		msg := "Could not open DB connection"
-		fmt.Fprintf(w, msg)
-		log.Println(msg, err)
+	ctx, cancel, client, collection, success := connectToCollection(w)
+	defer cancel()
+	defer client.Disconnect(ctx)
+	if !success {
 		return
 	}
 
-	err = db.Ping()
+	opts := options.Update().SetUpsert(true)
+	filter := bson.D{{Key: "nr", Value: nrVal}}
+	update := bson.D{{Key: "$set",
+		Value: bson.D{{Key: "components", Value: components}}}}
+
+	result, err := collection.UpdateOne(ctx, filter, update, opts)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		msg := "Connection to database was lost"
-		fmt.Fprintf(w, msg)
-		log.Println(msg, err)
-		return
-	}
-
-	var count int
-	query := `SELECT COUNT(*) FROM components WHERE nr = ?`
-
-	err = db.QueryRow(query, nrVal).Scan(&count)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		msg := "Can not prepare insertion/update of data"
-		fmt.Fprintf(w, msg)
-		log.Println(msg, err)
-		return
-	}
-
-	if count == 0 {
-		// Row does not exist -> can directly input
-		query = `INSERT INTO components (nr, components) VALUES (?, ?)`
-		_, err := db.Exec(query, nrVal, components)
-
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			msg := "Could not insert components"
-			fmt.Fprintf(w, msg)
-			log.Println(msg, err)
-		} else {
-			fmt.Fprintf(w, "Inserted components")
-		}
-		return
-	}
-	// Rows exists -> update
-	query = `UPDATE components SET components = ? WHERE nr = ?`
-	_, err = db.Exec(query, components, nrVal)
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		msg := "Could not update components"
-		fmt.Fprintf(w, msg)
-		log.Println(msg, err)
+		log.Println("Could not update database:", err)
+		fmt.Fprintln(w, "Could not update database")
 	} else {
-		fmt.Fprintf(w, "Updated components")
+		if result.UpsertedCount == 1 {
+			fmt.Fprintln(w, "Inserted workplace description")
+		} else if result.ModifiedCount == 1 {
+			fmt.Fprintln(w, "Updated workplace description")
+		}
 	}
 }
