@@ -4,7 +4,7 @@ RUN addgroup -S components && adduser -S components -G components
 USER components
 
 WORKDIR /src/app
-COPY . .
+COPY --chown=components:components . .
 
 RUN go get
 RUN go install
