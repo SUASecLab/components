@@ -21,8 +21,7 @@ var (
 	hostname string
 	dbname   string
 
-	adminExtensionsURL string
-	externalToken      string
+	sidecarUrl string
 )
 
 func connectToCollection(w http.ResponseWriter) (context.Context, context.CancelFunc, *mongo.Client, *mongo.Collection, bool) {
@@ -49,14 +48,9 @@ func main() {
 	hostname = os.Getenv("DB_HOST")
 	dbname = os.Getenv("DB_NAME")
 
-	adminExtensionsURL, exists = os.LookupEnv("ADMIN_EXTENSIONS")
+	sidecarUrl, exists = os.LookupEnv("SIDECAR_URL")
 	if !exists {
-		log.Fatalln("No admin extensions URL set")
-	}
-
-	externalToken, exists = os.LookupEnv("EXTERNAL_TOKEN")
-	if !exists {
-		log.Fatalln("No external token set")
+		log.Fatalln("No sidecar URL set")
 	}
 
 	r = mux.NewRouter()

@@ -3,15 +3,13 @@ module github.com/SUASecLab/components/components
 go 1.18
 
 require (
-	github.com/SUASecLab/workadventure_admin_extensions v0.0.2-0.20220725113120-410e27e89320
+	github.com/SUASecLab/workadventure_admin_extensions v0.0.2-0.20220828171930-794f3cd7107b
 	github.com/gorilla/mux v1.8.0
 	go.mongodb.org/mongo-driver v1.10.1
 )
 
 require (
-	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/pkg/errors v0.9.1 // indirect

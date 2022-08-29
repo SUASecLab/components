@@ -25,10 +25,21 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 	// Get user ID
 	userToken := r.URL.Query().Get("token")
 
-	// Validate uuid
-	exists, errorMsg := extensions.UserExists(adminExtensionsURL, userToken)
-	if !exists {
+	// Find out if user is allowed to receive workplace information
+	allowed, err := extensions.AuthRequestAndDecision("http://" + sidecarUrl +
+		"/auth?token=" + userToken + "&service=showComponents")
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		errorMsg := "Could not receive authentication decision"
+		log.Println(errorMsg, err)
+		fmt.Fprintf(w, errorMsg)
+		return
+	}
+
+	if !allowed {
 		w.WriteHeader(http.StatusForbidden)
+		errorMsg := "You are not allowed to access the components information"
 		log.Println(errorMsg)
 		fmt.Fprintf(w, errorMsg)
 		return

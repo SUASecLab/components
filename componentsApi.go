@@ -16,14 +16,20 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 	nr := r.URL.Query().Get("nr")
 	components := r.URL.Query().Get("components")
 
-	// find out whether user is admin
-	isAdmin, errorMsg := extensions.UserIsAdmin(adminExtensionsURL, userToken)
-	if !isAdmin || len(errorMsg) != 0 {
+	// find out whether user is allowed to change the components
+	allowed, err := extensions.AuthRequestAndDecision("http://" + sidecarUrl +
+		"/auth?token=" + userToken + "&service=updateComponents")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		errorMsg := "Error while checking if user is allowed to update components"
+		fmt.Fprintf(w, errorMsg)
+		log.Println(errorMsg, err)
+		return
+	}
+
+	if !allowed {
 		w.WriteHeader(http.StatusForbidden)
-		fmt.Fprintf(w, "You are not an administrator")
-		if len(errorMsg) > 0 {
-			log.Println("Error while checking if user is admin:", errorMsg)
-		}
+		fmt.Fprintf(w, "You are not allowed to update the components")
 		return
 	}
 
@@ -51,11 +57,12 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Println("Could not update database:", err)
 		fmt.Fprintln(w, "Could not update database")
-	} else {
-		if result.UpsertedCount == 1 {
-			fmt.Fprintln(w, "Inserted workplace description")
-		} else if result.ModifiedCount == 1 {
-			fmt.Fprintln(w, "Updated workplace description")
-		}
+		return
+	}
+
+	if result.UpsertedCount == 1 {
+		fmt.Fprintln(w, "Inserted workplace description")
+	} else if result.ModifiedCount == 1 {
+		fmt.Fprintln(w, "Updated workplace description")
 	}
 }
