@@ -17,7 +17,7 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 	components := r.URL.Query().Get("components")
 
 	// find out whether user is allowed to change the components
-	allowed, err := extensions.AuthRequestAndDecision("http://" + sidecarUrl +
+	decision, err := extensions.GetAuthDecision("http://" + sidecarUrl +
 		"/auth?token=" + userToken + "&service=updateComponents")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -27,7 +27,7 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !allowed {
+	if !decision.Allowed {
 		w.WriteHeader(http.StatusForbidden)
 		fmt.Fprintf(w, "You are not allowed to update the components")
 		return

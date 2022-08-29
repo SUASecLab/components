@@ -26,7 +26,7 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 	userToken := r.URL.Query().Get("token")
 
 	// Find out if user is allowed to receive workplace information
-	allowed, err := extensions.AuthRequestAndDecision("http://" + sidecarUrl +
+	decision, err := extensions.GetAuthDecision("http://" + sidecarUrl +
 		"/auth?token=" + userToken + "&service=showComponents")
 
 	if err != nil {
@@ -37,7 +37,7 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !allowed {
+	if !decision.Allowed {
 		w.WriteHeader(http.StatusForbidden)
 		errorMsg := "You are not allowed to access the components information"
 		log.Println(errorMsg)
