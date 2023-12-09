@@ -1,10 +1,16 @@
-FROM golang:1.20-alpine
+FROM golang:1.21-alpine as golang-builder
 
 RUN addgroup -S components && adduser -S components -G components
-USER components
 
 WORKDIR /src/app
 COPY --chown=components:components . .
 
 RUN go get
-RUN go install
+RUN go build
+
+FROM scratch
+COPY --from=golang-builder /src/app/components /components
+COPY --from=golang-builder /etc/passwd /etc/passwd
+
+USER components
+CMD [ "/components" ]
