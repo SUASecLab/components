@@ -1,5 +1,5 @@
-github.com/SUASecLab/workadventure_admin_extensions v0.0.2-0.20220829143533-f427a7a6ab4e h1:iyxruqc3/zbUbxYJ4jqUz0BXwxZsFeYWXqjPWn9AhjE=
-github.com/SUASecLab/workadventure_admin_extensions v0.0.2-0.20220829143533-f427a7a6ab4e/go.mod h1:lkvve/M/GaWz0e2NjGVQlgMBS/7TXqp3ikBWt45XIjM=
+github.com/SUASecLab/workadventure_admin_extensions v0.0.3 h1:GJfp7kpP5kX9vQBVMRJ1OKbeiz9BQz3VfZGzHWjmJkc=
+github.com/SUASecLab/workadventure_admin_extensions v0.0.3/go.mod h1:HoDMdNej1jN/rOpP9fUm5Wlg0tEfBTIHLpTO4etq6EU=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/golang/snappy v0.0.4 h1:yAGX7huGHXlcLOEtBnF4w7FQwA26wojNCwOYAEhLjQM=
 github.com/golang/snappy v0.0.4/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
