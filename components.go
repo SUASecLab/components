@@ -64,11 +64,11 @@ func main() {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			msg := "Can not serve file"
-			fmt.Fprintf(w, msg)
+			fmt.Fprintf(w, "%s", msg)
 			log.Println(msg, err)
 			return
 		}
-		fmt.Fprintf(w, string(content))
+		fmt.Fprintf(w, "%s", string(content))
 	})
 
 	log.Println("Components is listening on port 8080")

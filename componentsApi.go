@@ -22,7 +22,7 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		errorMsg := "Error while checking if user is allowed to update components"
-		fmt.Fprintf(w, errorMsg)
+		fmt.Fprintf(w, "%s", errorMsg)
 		log.Println(errorMsg, err)
 		return
 	}

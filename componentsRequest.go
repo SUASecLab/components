@@ -33,7 +33,7 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		errorMsg := "Could not receive authentication decision"
 		log.Println(errorMsg, err)
-		fmt.Fprintf(w, errorMsg)
+		fmt.Fprintf(w, "%s", errorMsg)
 		return
 	}
 
@@ -41,7 +41,7 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		errorMsg := "You are not allowed to access the components information"
 		log.Println(errorMsg)
-		fmt.Fprintf(w, errorMsg)
+		fmt.Fprintf(w, "%s", errorMsg)
 		return
 	}
 
