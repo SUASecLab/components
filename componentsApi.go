@@ -30,6 +30,7 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 	if !decision.Allowed {
 		w.WriteHeader(http.StatusForbidden)
 		fmt.Fprintf(w, "You are not allowed to update the components")
+		log.Println("Forbidden access attempt on request API")
 		return
 	}
 
@@ -37,6 +38,7 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "Invalid workplace number")
+		log.Println("Invalid workplace number provided")
 		return
 	}
 
@@ -44,6 +46,8 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	defer client.Disconnect(ctx)
 	if !success {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println("Could not connect to collection")
 		return
 	}
 

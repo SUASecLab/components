@@ -50,6 +50,7 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "Invalid workplace number")
+		log.Println("Could not convert workplace to number")
 		return
 	}
 
@@ -57,6 +58,8 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	defer client.Disconnect(ctx)
 	if !success {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println("Could not connect to collection")
 		return
 	}
 
