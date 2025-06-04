@@ -68,5 +68,7 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Inserted workplace description")
 	} else if result.ModifiedCount == 1 {
 		fmt.Fprintln(w, "Updated workplace description")
+	} else {
+		fmt.Fprintln(w, "Did not update workplace description. Are you sure the components changed?")
 	}
 }
