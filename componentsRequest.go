@@ -1,6 +1,8 @@
 package main
 
 import (
+	"html"
+
 	"github.com/SUASecLab/workadventure_admin_extensions/extensions"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -24,6 +26,10 @@ func handleComponentsRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Get user ID
 	userToken := r.URL.Query().Get("token")
+
+	// escape input
+	nr = html.EscapeString(nr)
+	userToken = html.EscapeString(userToken)
 
 	// Find out if user is allowed to receive workplace information
 	decision, err := extensions.GetAuthDecision("http://" + sidecarUrl +

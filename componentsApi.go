@@ -1,6 +1,8 @@
 package main
 
 import (
+	"html"
+
 	"github.com/SUASecLab/workadventure_admin_extensions/extensions"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,6 +17,11 @@ func handleAPIRequest(w http.ResponseWriter, r *http.Request) {
 	userToken := r.URL.Query().Get("token")
 	nr := r.URL.Query().Get("nr")
 	components := r.URL.Query().Get("components")
+
+	// escape input
+	userToken = html.EscapeString(userToken)
+	nr = html.EscapeString(nr)
+	components = html.EscapeString(components)
 
 	// find out whether user is allowed to change the components
 	decision, err := extensions.GetAuthDecision("http://" + sidecarUrl +
